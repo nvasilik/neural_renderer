@@ -6,7 +6,7 @@ from torch.autograd import Function
 import neural_renderer.cuda.rasterize as rasterize_cuda
 
 DEFAULT_IMAGE_SIZE = 256
-DEFAULT_ANTI_ALIASING = False
+DEFAULT_ANTI_ALIASING = True
 DEFAULT_NEAR = 0.1
 DEFAULT_FAR = 100
 DEFAULT_EPS = 1e-4
