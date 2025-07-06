@@ -113,7 +113,7 @@ class RasterizeFunction(Function):
         if ctx.return_rgb:
             grad_textures = torch.zeros_like(textures, dtype=torch.float32)
         else:
-            grad_textures = torch.cuda.FloatTensor(1).fill_(0.0)
+            grad_textures = torch.FloatTensor(1).fill_(0.0).to(ctx.device)
         
         # get grad_outputs
         if ctx.return_rgb:
@@ -122,21 +122,21 @@ class RasterizeFunction(Function):
             else:
                 grad_rgb_map = torch.zeros_like(rgb_map)
         else:
-            grad_rgb_map = torch.cuda.FloatTensor(1).fill_(0.0)
+            grad_rgb_map = torch.FloatTensor(1).fill_(0.0).to(ctx.device)
         if ctx.return_alpha:
             if grad_alpha_map is not None:
                 grad_alpha_map = grad_alpha_map.contiguous()
             else:
                 grad_alpha_map = torch.zeros_like(alpha_map)
         else:
-            grad_alpha_map = torch.cuda.FloatTensor(1).fill_(0.0)
+            grad_alpha_map = torch.FloatTensor(1).fill_(0.0).to(ctx.device)
         if ctx.return_depth:
             if grad_depth_map is not None:
                 grad_depth_map = grad_depth_map.contiguous()
             else:
                 grad_depth_map = torch.zeros_like(ctx.depth_map)
         else:
-            grad_depth_map = torch.cuda.FloatTensor(1).fill_(0.0)
+            grad_depth_map = torch.FloatTensor(1).fill_(0.0).to(ctx.device)
 
         # backward pass
         grad_faces = RasterizeFunction.backward_pixel_map(
@@ -187,7 +187,7 @@ class RasterizeFunction(Function):
     @staticmethod
     def forward_background(ctx, face_index_map, rgb_map):
         if ctx.return_rgb:
-            background_color = torch.cuda.FloatTensor(ctx.background_color)
+            background_color = torch.FloatTensor(ctx.background_color).to(ctx.device)
             mask = (face_index_map >= 0).float()[:, :, :, None]
             if background_color.ndimension() == 1:
                 rgb_map = rgb_map * mask + (1-mask) * background_color[None, None, None, :]
